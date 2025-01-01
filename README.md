@@ -4,6 +4,10 @@ Christmas mess around with svelte. Plays drum, base and dorian scale on piano
 
 `npm run dev`
 
+```
+docker build . -t orca:latest
+docker run -p8080:80 orca:latest
+```
 
 # Attribution
 
