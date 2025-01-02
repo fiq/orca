@@ -1,13 +1,14 @@
 <script>
   import { onMount } from 'svelte';
   import * as Tone from 'tone';
-
+  import { get_scale } from './scales.js';
   export let volume = 0;
   export let modulation = 0;
 
+  const defaultScale = 'mixolydian';
   let ukulele;
   let ukuleleLoop;
-  const notes = ['C4', 'D4', 'Eb4', 'F4', 'G4', 'A4', 'Bb4', 'C5'];
+  let scale = get_scale('C4', defaultScale);
   let ukuleleIndex = 0;
 
   const startUkuleleLoop = () => {
@@ -27,6 +28,11 @@
     // Placeholder for actual modulation logic
   };
 
+  const updateScale = (event) => {
+    scale = get_scale('C4', event.target.value);
+    console.debug(scale);
+  }
+
   onMount(() => {
     ukulele = new Tone.Sampler({
       urls: {
@@ -39,8 +45,8 @@
     }).toDestination();
 
     ukuleleLoop = new Tone.Loop(time => {
-      ukulele.triggerAttack(notes[ukuleleIndex]);
-      ukuleleIndex = (ukuleleIndex + 1) % notes.length;
+      ukulele.triggerAttack(scale[ukuleleIndex]);
+      ukuleleIndex = (ukuleleIndex + 1) % scale.length;
     }, '4n');
   });
 </script>
@@ -49,6 +55,17 @@
   <h2 class="text-xl mb-2">Ukulele</h2>
   <button class="bg-green-500 text-white py-2 px-4 rounded mb-2" on:click={startUkuleleLoop}>Play Ukulele</button>
   <button class="bg-red-500 text-white py-2 px-4 rounded mb-2" on:click={stopUkuleleLoop}>Stop Ukulele</button>
+  <select on:input={updateScale} class="mr-4">
+    <option value='ionian'>Ionian(Major)</option>
+    <option selected value='dorian'>Dorian</option>
+    <option value='phyrigian'>Phyrigian</option>
+    <option value='lydian'>Lydian</option>
+    <option value='mixolydian'>Mixolydian</option>
+    <option value='aeolian'>Aeolian(minor)</option>
+    <option value='locrian'>Locrian</option>
+  </select>
+
+
   <div class="flex items-center">
     <label for="ukuleleVolume" class="mr-2">Volume:</label>
     <input type="range" id="ukuleleVolume" min="-60" max="10" value={volume} on:input={updateVolume} class="mr-4">
